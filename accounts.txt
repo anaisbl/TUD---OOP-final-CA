@@ -1,2 +1,7 @@
-{190: ['Checking Account', 'Boby may', 19, 'boby.may@gmail.com', 'capel st dublin ireland']}
-{680: ['Savings Account', 'Zenitsu Thunder', 25, 'zeni_sky55@yahoo.com', 'quiet lane dublin ireland']}
+[501, 'Savings Account', 'Vaseline Blue', 29, 'vase.blue@outlook.com', 'dublin ireland']
+[940, 'Savings Account', 'Acer Inspire', 47, 'inspire.acer33@gmail.com', 'galway ireland']
+[479, 'Savings Account', 'Scissor Seven', 23, 'scissor.banmi@outlook.com', 'dublin ireland']
+[354, 'Checking Account', 'Redmi Nota', 76, 'redmi.notarydess@outlook.fr', 'monkstown ireland']
+[137, 'Savings Account', 'Pencil Blue', 36, 'pencile.blue@gmail.com', 'limerick ireland']
+[898, 'Checking Account', 'Lamp Ikea', 98, 'ikea.lamp655@gmail.com', 'galway ireland']
+[222, 'Checking Account', 'Occitane Sud', 47, 'occi.tane47@gmail.com', 'cornway ireland']

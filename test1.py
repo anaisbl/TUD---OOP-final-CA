@@ -35,9 +35,9 @@ def input_account_details(age, account_type):
     email = str(input("How can we email you? "))
     address = str(input("Where do you live? (Street, City, Country) "))
     account_number = random.randint(100, 999)
-    account_dict = {account_number: [account_type, name, age, email, address]}
-    write_account_to_file(account_dict)
-    print(account_dict, "Account created successfully")
+    account_list = [account_number, account_type, name, age, email, address]
+    write_account_to_file(account_list)
+    print(account_list, "Account created successfully")
 
 
 def banking_menu():
