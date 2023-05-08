@@ -1,1 +1,2 @@
-account info here
+{190: ['Checking Account', 'Boby may', 19, 'boby.may@gmail.com', 'capel st dublin ireland']}
+{680: ['Savings Account', 'Zenitsu Thunder', 25, 'zeni_sky55@yahoo.com', 'quiet lane dublin ireland']}
