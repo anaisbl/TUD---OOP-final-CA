@@ -1,23 +1,25 @@
 import random
 
 
-class Account(object):
-    def __init__(self, account_number="", account_name="", account_type="", age="", email="", address=""):
+class Customer(object):
+    def __init__(self, account_number="", account_name="", account_type="", age="", email="", address=""
+                 , account_balance="0"):
         self.account_number = account_number
         self.name = account_name
         self.account_type = account_type
         self.age = age
         self.email = email
         self.address = address
+        self.account_balance = account_balance
 
     def __str__(self):
         return "Account number: " + str(self.account_number) + "\nAccount type: " + str(self.account_type) + \
             "\nAccount name: " + str(self.name) + "\nAge: " + str(self.age) + "\nEmail: " + \
-            str(self.email) + "\nAddress: " + str(self.address)
+            str(self.email) + "\nAddress: " + str(self.address) + "\nAccount balance: " + str(self.account_balance)
 
     def write_account_to_file(self, account_info):
         f = open("accounts.txt", "a")
-        f.write(str(account_info) + "\n")
+        f.write(",".join(account_info) + "\n")
         f.close()
 
     def create_account(self):
@@ -26,28 +28,28 @@ class Account(object):
         if account_type == 1:
             account_type = "Checking Account"
             age = int(input("How old are you? "))
-            if age > 14:
+            if age >= 14:
                 print("Eligible to open Checking account")
                 self.input_account_details(age, account_type)
             else:
                 print("Too young to open Checking account")
-                print("Exiting Bank CDE menu...")
+                print("Exiting Account Creation...")
         elif account_type == 2:
             account_type = "Savings Account"
             age = int(input("How old are you? "))
-            if age > 18:
+            if age >= 18:
                 print("Eligible to open Checking account")
                 self.input_account_details(age, account_type)
             else:
                 print("Too young to open Checking account")
-                print("Exiting Bank CDE menu...")
+                print("Exiting Account Creation...")
 
     def input_account_details(self, age, account_type):
         name = str(input("What is your name? "))
         email = str(input("How can we email you? "))
         address = str(input("Where do you live? (Street, City, Country) "))
-        account_number = random.randint(100, 999)
-        account_list = [account_number, account_type, name, age, email, address]
+        account_number = str(random.randint(100, 999))
+        account_list = [account_number, account_type, name, str(age), email, address, self.account_balance]
         print("\nOverview Account:\n")
         self.account_number = account_list[0]
         self.account_type = account_list[1]
@@ -55,14 +57,14 @@ class Account(object):
         self.age = account_list[3]
         self.email = account_list[4]
         self.address = account_list[5]
+        self.account_balance = account_list[6]
         print(self.__str__())
         answer = str(input("Type y to confirm account, type n to cancel: "))
         if answer == "y":
             self.write_account_to_file(account_list)
-            print("\nAccount created successfully")
+            print("\nAccount created successfully\n Exiting Account Creation...\n")
         elif answer == "n":
-            print("Account creation cancelled")
-            print("Exiting Bank CDE menu...")
+            print("Account creation cancelled\nExiting Account Creation...\n")
 
     def find_account(self):
         account_number = str(input("What is your account number: "))
@@ -86,6 +88,7 @@ class Account(object):
                 self.age = account_list[3]
                 self.email = account_list[4]
                 self.address = account_list[5]
+                self.account_balance = account_list[6]
                 print(self.__str__())
                 self.delete_account(account_number)
 
@@ -118,14 +121,14 @@ class Account(object):
         pass
 
 
-class Customer(object):
+class Account(object):
     def __init__(self):
         pass
 
 
 def banking_menu():
-    p1 = Account()
-    p2 = Customer()
+    p1 = Customer()
+    p2 = Account()
     answer = ""
     while answer != "x":
         print("*********************\n"
@@ -146,10 +149,8 @@ def banking_menu():
 
         if answer == "1":
             p1.create_account()
-            break
         elif answer == "2":
             p1.find_account()
-            break
         elif answer == "3":
             print("withdraw money")
             break

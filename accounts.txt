@@ -1,7 +1,6 @@
-[501, 'Savings Account', 'Vaseline Blue', 29, 'vase.blue@outlook.com', 'dublin ireland']
-[940, 'Savings Account', 'Acer Inspire', 47, 'inspire.acer33@gmail.com', 'galway ireland']
-[479, 'Savings Account', 'Scissor Seven', 23, 'scissor.banmi@outlook.com', 'dublin ireland']
-[354, 'Checking Account', 'Redmi Nota', 76, 'redmi.notarydess@outlook.fr', 'monkstown ireland']
-[137, 'Savings Account', 'Pencil Blue', 36, 'pencile.blue@gmail.com', 'limerick ireland']
-[898, 'Checking Account', 'Lamp Ikea', 98, 'ikea.lamp655@gmail.com', 'galway ireland']
-[222, 'Checking Account', 'Occitane Sud', 47, 'occi.tane47@gmail.com', 'cornway ireland']
+615,Checking Account,nana dess,23,nana@gmail.com,dublin ireland,0
+290,Checking Account,sam endeva,25,sam@outlook.com,dublin ireland,0
+970,Savings Account,nivea rollon,77,nivea@gmail.com,galway ireland,0
+805,Savings Account,occitane blue,18,occi@outlook.fr,limerick ireland,0
+719,Checking Account,JBL bose,28,jbl@gmail.com,dublin ireland,0
+474,Savings Account,cocotte meunier,28,cocotte.paris@gmail.com,paris france,55
