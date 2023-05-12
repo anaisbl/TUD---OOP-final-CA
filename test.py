@@ -1,11 +1,6 @@
 import random
 from datetime import datetime
 
-# account_file = "accounts.txt"
-# account_transactions_file = "accountsTransactions.txt"
-# customer_file = "customers.txt"
-
-
 class Customer(object):
     def __init__(self, account_number="", account_name="", account_type="", age="", email="", address=""
                  , account_balance="0"):
@@ -48,7 +43,7 @@ class Customer(object):
         account_file = "accounts.txt"
         name = str(input("What is your name? "))
         email = str(input("How can we email you? "))
-        address = str(input("Where do you live? (Street, City, Country) "))
+        address = str(input("Where do you live? (City Country) "))
         account_number = str(random.randint(100, 999))
         account_list = [account_number, account_type, name, str(age), email, address, self.account_balance]
         print("\nOverview Account:\n")
@@ -87,6 +82,7 @@ class Customer(object):
             if i == 0:
                 print("Account \"" + account_number + "\" does not exist in Company BCE records !")
             else:
+                # store retrieved information
                 account_info = retrieved_line[:-1]
                 account_list = list(account_info.split(","))
                 self.account_number = account_list[0]
@@ -110,6 +106,7 @@ class Customer(object):
                       "x. Exit \n"
                       "*********************\n")
                 answer = str(input("Your response: "))
+                # variables for methods called in the account management menu
                 account_type = self.account_type
                 account_name = self.name
                 account_age = self.age
@@ -118,14 +115,17 @@ class Customer(object):
                 account_balance = self.account_balance
 
                 if answer == "1":
+                    # view account information
                     print("\n---Information for account \"" + account_number + "\"---\n")
                     print("Account type: ", account_type, "\nAccount name : ", account_name, "\nAccount age: ",
                           account_age, "\nAccount email: ", account_email, "\nAccount address: ", account_address, "\n")
                 elif answer == "2":
+                    # view account balance
                     print("\n---Balance for account \"" + account_number + "\"---\n")
                     print(account_balance, "\n")
                 elif answer == "3":
-                    print("Account transaction")  # view account transaction
+                    # view account transactions
+                    self.view_transaction(account_number)
                 elif answer == "4":
                     # deposit
                     self.deposit(line_number, account_number)
@@ -140,87 +140,94 @@ class Customer(object):
                 else:
                     print("Invalid menu option\n")
 
-
     def deposit(self, line_number, account_number):
         account_file = "accounts.txt"
-        transaction_type = "Deposit"
-        amount = str(input("How much do you want to deposit into your account?\n"
+        transaction_type = "Deposit" # variable for recording the transaction
+        amount = int(input("How much do you want to deposit into your account?\n"
                            "Amount: "))
 
-        # retrieve current balance from accounts.txt
-        with open(account_file, "r") as filedata:
-            lines = filedata.readlines()
-        filedata.close()
-        line = lines[line_number - 1]
-        line_list = line.split(",")
-        current_balance = int(line_list[6])
+        # check user input is valid
+        if amount > 1:
+            # retrieve current balance from accounts.txt
+            with open(account_file, "r") as filedata:
+                lines = filedata.readlines()
+            filedata.close()
+            line = lines[line_number - 1]
+            line_list = line.split(",")
+            current_balance = int(line_list[6])
 
-        new_balance = current_balance + int(amount)
+            new_balance = current_balance + amount
 
-        line_list[6] = str(new_balance)
-        new_line = ",".join(line_list) + "\n"
-        lines[line_number - 1] = new_line
+            line_list[6] = str(new_balance)
+            new_line = ",".join(line_list) + "\n"
+            lines[line_number - 1] = new_line
 
-        # write new balance to accounts.txt
-        with open(account_file, "w") as f:
-            f.writelines(lines)
-        filedata.close()
-        print("\nNew account balance: ", new_balance)
+            # write new balance to accounts.txt
+            with open(account_file, "w") as f:
+                f.writelines(lines)
+            filedata.close()
+            print("\nNew account balance: ", new_balance)
 
-        # record transaction to accountsTransactions.txt
-        self.record_transaction(account_number, transaction_type, amount)
-
+            # record transaction to accountsTransactions.txt
+            self.record_transaction(account_number, transaction_type, amount)
+        else:
+            print("Invalid amount!")
 
     def withdraw(self, line_number, account_number, account_type):
         account_file = "accounts.txt"
-        transaction_type = "Withdraw"
-        amount = str(input("How much do you want to withdraw from your account?\n"
+        transaction_type = "Withdraw" # variable for recording the transaction
+        amount = int(input("How much do you want to withdraw from your account?\n"
                            "Amount: "))
 
-        # retrieve current balance from accounts.txt
-        with open(account_file, "r") as filedata:
-            lines = filedata.readlines()
-        filedata.close()
-        line = lines[line_number - 1]
-        line_list = line.split(",")
-        current_balance = int(line_list[6])
+        # check that user input is valid integer
+        if amount > 1:
+            # retrieve current balance from accounts.txt
+            with open(account_file, "r") as filedata:
+                lines = filedata.readlines()
+            filedata.close()
+            line = lines[line_number - 1]
+            line_list = line.split(",")
+            current_balance = int(line_list[6])
 
-        if account_type == "Checking Account":
-            new_balance = current_balance - int(amount)
-            if new_balance < 200:
-                print("Credit limit of -200€ reached! Cannot withdraw. Try another amount.")
-            else:
-                line_list[6] = str(new_balance)
-                new_line = ",".join(line_list) + "\n"
-                lines[line_number - 1] = new_line
+            # check user account type to allow/deny withdrawal
+            if account_type == "Checking Account":
+                new_balance = current_balance - amount
+                if new_balance < 200:
+                    print("Credit limit of -200€ reached! Cannot withdraw. Try another amount.")
+                else:
+                    line_list[6] = str(new_balance)
+                    new_line = ",".join(line_list) + "\n"
+                    lines[line_number - 1] = new_line
 
-                # write new balance to accounts.txt
-                with open(account_file, "w") as f:
-                    f.writelines(lines)
-                filedata.close()
-                print("\nNew account balance: ", new_balance)
+                    # write new balance to accounts.txt
+                    with open(account_file, "w") as f:
+                        f.writelines(lines)
+                    filedata.close()
+                    print("\nNew account balance: ", new_balance)
 
-                # record transaction to accountsTransactions.txt
-                self.record_transaction(account_number, transaction_type, amount)
-        elif account_type == "Savings Account":
-            # need to add logic to check accountsTransactions.txt for 1 withdraw per month
-            new_balance = current_balance - int(amount)
-            if new_balance < 0:
-                print("You cannot withdraw below negative balance!")
-            else:
-                line_list[6] = str(new_balance)
-                new_line = ",".join(line_list) + "\n"
-                lines[line_number - 1] = new_line
+                    # record transaction to accountsTransactions.txt
+                    self.record_transaction(account_number, transaction_type, amount)
 
-                # write new balance to accounts.txt
-                with open(account_file, "w") as f:
-                    f.writelines(lines)
-                filedata.close()
-                print("\nNew account balance: ", new_balance)
+            elif account_type == "Savings Account":
+                # need to add logic to check accountsTransactions.txt for 1 withdraw per month
+                new_balance = current_balance - amount
+                if new_balance < 0:
+                    print("You cannot withdraw below negative balance!")
+                else:
+                    line_list[6] = str(new_balance)
+                    new_line = ",".join(line_list) + "\n"
+                    lines[line_number - 1] = new_line
 
-                # record transaction to accountsTransactions.txt
-                self.record_transaction(account_number, transaction_type, amount)
+                    # write new balance to accounts.txt
+                    with open(account_file, "w") as f:
+                        f.writelines(lines)
+                    filedata.close()
+                    print("\nNew account balance: ", new_balance)
 
+                    # record transaction to accountsTransactions.txt
+                    self.record_transaction(account_number, transaction_type, amount)
+        else:
+            print("Invalid amount!")
 
     def delete_account(self, account_number):
         print("Do you want to delete your account? Type y for yes, n for no: ")
@@ -244,7 +251,6 @@ class Customer(object):
             print("input not recognized")
             answer = str(input("Your response:"))
 
-
     def record_transaction(self, account_num, transaction_type, amount):
         dt = datetime.now()
         ts = datetime.timestamp(dt)
@@ -257,12 +263,35 @@ class Customer(object):
         print("Transaction of type: ", transaction_type, "\nAmount: ", amount,
               "\nAccount number: ", account_num, "\nTransaction successfully recorded\n")
 
+    def view_transaction(self, account_number):
+        account_transactions_file = "accountsTransactions.txt"
+
+        # retrieve all transactions for account_number from accountsTransactions.txt
+        with open(account_transactions_file, "r") as filedata:
+            lines = filedata.readlines()
+        filedata.close()
+        matching_lines = []
+
+        # loop through retrieved lines to store matching lines in matching_lines list
+        for line in lines:
+            line_list = line.split(",")
+            if line_list[1] == account_number:
+                matching_lines.append(line.strip())
+
+        if len(matching_lines) == 0:
+            print("There are no transactions recorded for account number { ", account_number, "}")
+        else:
+            print("Transactions for account number { ", account_number, "} :\n")
+            for line in matching_lines:
+                timestamp, account_number, transaction_type, amount = line.split(",")
+                # converting timestamp to date time format
+                date_time = datetime.fromtimestamp(int(timestamp))
+                print(date_time, transaction_type, amount)
+
 
 class Account(object):
     def __init__(self):
         pass
-
-
 
 
 def banking_menu():
@@ -286,11 +315,11 @@ def banking_menu():
         if answer == "1":
             p1.create_account()
         elif answer == "2":
-            # manage account, add menu in find_account to give menu for view account balance and view transactions
             p1.find_account()
         elif answer == "x":
             print("Thank you for choosing Bank CDE, bye babe!")
         else:
             print("Invalid menu option\n")
+
 
 banking_menu()
