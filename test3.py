@@ -1,3 +1,5 @@
+from datetime import datetime
+
 file_path = "accounts.txt"
 
 
@@ -37,21 +39,37 @@ def replace_list_item(file_path, replace_string, operation):
 
 
 
+def record_transaction(account_num, transaction_type, amount):
+    dt = datetime.now()
+    ts = datetime.timestamp(dt)
+    ts_int = int(ts)
+    transaction_list = [str(ts_int), account_num, transaction_type, amount]
+
+    f = open("accountsTransactions.txt", "a")
+    f.write(",".join(transaction_list) + "\n")
+    f.close()
+    print("Transaction of type: ",transaction_type, "\nAmount: ", amount,
+          "\nAccount number: ", account_num, "\nSuccessfully recorded")
+
+
 
 def operation():
     account_num = input("What is your account number?")
+    find_line_number(file_path, account_num)
     # display account information
     operation = input("Do you want to deposit, withdraw or transfer?\n type + for deposit\n type - for withdraw\n")
     if operation == "+":
+        transaction_type = "Deposit"
         amount = str(input("How much do you want to deposit into your account?"))
         print("Depositing", amount, "...")
     elif operation == "-":
+        transaction_type = "Withdraw"
         amount = str(input("How much do you want to withdraw from your account?"))
         print("Withdrawing", amount, "...")
     else:
         print("Operator not recognized")
-    find_line_number(file_path, account_num)
     replace_list_item(file_path, amount, operation)
+    record_transaction(account_num, transaction_type, amount)
 
 
 operation()
