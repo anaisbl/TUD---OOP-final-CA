@@ -1,6 +1,7 @@
 import random
 from datetime import datetime
 
+
 class Customer(object):
     def __init__(self, account_number="", account_name="", account_type="", age="", email="", address=""
                  , account_balance="0"):
@@ -209,25 +210,45 @@ class Customer(object):
                     self.record_transaction(account_number, transaction_type, amount)
 
             elif account_type == "Savings Account":
-                # need to add logic to check accountsTransactions.txt for 1 withdraw per month
-                new_balance = current_balance - amount
-                if new_balance < 0:
-                    print("You cannot withdraw below negative balance!")
+                # check if specific account has already made 1 withdrawal for the month
+                # read lines of accountsTransactions.txt
+                with open("accountsTransactions.txt", "r") as f:
+                    transactions = f.readlines()
+                f.close()
+                current_month_withdrawals = 0
+                # loop through the lines to look for a match in account number, type of transaction & current month
+                for transaction in transactions:
+                    transaction_info = transaction.split(",")
+                    if transaction_info[1] == account_number and transaction_info[2] == "Withdraw"\
+                        and self.is_current_month(transaction_info[0]):
+                        current_month_withdrawals += 1
+                if current_month_withdrawals > 0:
+                    print("You have reached your maximum withdrawal of 1 for the month!")
+                    return  # end the loop if a withdrawal has been made in current month
                 else:
-                    line_list[6] = str(new_balance)
-                    new_line = ",".join(line_list) + "\n"
-                    lines[line_number - 1] = new_line
+                    new_balance = current_balance - amount
+                    if new_balance < 0:
+                        print("You cannot withdraw below negative balance!")
+                    else:
+                        line_list[6] = str(new_balance)
+                        new_line = ",".join(line_list) + "\n"
+                        lines[line_number - 1] = new_line
 
-                    # write new balance to accounts.txt
-                    with open(account_file, "w") as f:
-                        f.writelines(lines)
-                    filedata.close()
-                    print("\nNew account balance: ", new_balance)
+                        # write new balance to accounts.txt
+                        with open(account_file, "w") as f:
+                            f.writelines(lines)
+                        filedata.close()
+                        print("\nNew account balance: ", new_balance)
 
-                    # record transaction to accountsTransactions.txt
-                    self.record_transaction(account_number, transaction_type, amount)
+                        # record transaction to accountsTransactions.txt
+                        self.record_transaction(account_number, transaction_type, amount)
         else:
             print("Invalid amount!")
+
+    def is_current_month(self, timestamp):
+        transaction_date = datetime.fromtimestamp(int(timestamp))
+        current_date = datetime.now()
+        return transaction_date.year == current_date.year and transaction_date.month == current_date.month
 
     def delete_account(self, account_number):
         print("Do you want to delete your account? Type y for yes, n for no: ")
@@ -255,7 +276,7 @@ class Customer(object):
         dt = datetime.now()
         ts = datetime.timestamp(dt)
         ts_int = int(ts)
-        transaction_list = [str(ts_int), account_num, transaction_type, amount]
+        transaction_list = [str(ts_int), account_num, transaction_type, str(amount)]
 
         f = open("accountsTransactions.txt", "a")
         f.write(",".join(transaction_list) + "\n")
