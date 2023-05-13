@@ -100,10 +100,11 @@ class Customer(object):
                       "*********************\n"
                       "1. View account information \n"
                       "2. View account balance \n"
-                      "3. View account transaction \n"
+                      "3. View account transactions \n"
                       "4. Deposit \n"
                       "5. Withdraw \n"
-                      "6. Delete account \n"
+                      "6. Transfer \n"
+                      "7. Delete account \n"
                       "x. Exit \n"
                       "*********************\n")
                 answer = str(input("Your response: "))
@@ -117,7 +118,7 @@ class Customer(object):
 
                 if answer == "1":
                     # view account information
-                    print("\n---Information for account \"" + account_number + "\"---\n")
+                    print("\n---Information for account {" + account_number + "}---\n")
                     print("Account type: ", account_type, "\nAccount name : ", account_name, "\nAccount age: ",
                           account_age, "\nAccount email: ", account_email, "\nAccount address: ", account_address, "\n")
                 elif answer == "2":
@@ -126,7 +127,8 @@ class Customer(object):
                     print(account_balance, "\n")
                 elif answer == "3":
                     # view account transactions
-                    self.view_transaction(account_number)
+                    self.view_transactions(account_number)
+                    self.view_transfers(account_number)
                 elif answer == "4":
                     # deposit
                     self.deposit(line_number, account_number)
@@ -134,6 +136,9 @@ class Customer(object):
                     # withdraw
                     self.withdraw(line_number, account_number, account_type)
                 elif answer == "6":
+                    # transfer
+                    self.transfer(line_number, account_number, account_type)
+                elif answer == "7":
                     # delete account
                     self.delete_account(account_number)
                 elif answer == "x":
@@ -193,7 +198,7 @@ class Customer(object):
             # check user account type to allow/deny withdrawal
             if account_type == "Checking Account":
                 new_balance = current_balance - amount
-                if new_balance < 200:
+                if new_balance < -200:
                     print("Credit limit of -200€ reached! Cannot withdraw. Try another amount.")
                 else:
                     line_list[6] = str(new_balance)
@@ -284,11 +289,36 @@ class Customer(object):
         print("Transaction of type: ", transaction_type, "\nAmount: ", amount,
               "\nAccount number: ", account_num, "\nTransaction successfully recorded\n")
 
-    def view_transaction(self, account_number):
+    def view_transactions(self, account_number):
         account_transactions_file = "accountsTransactions.txt"
 
         # retrieve all transactions for account_number from accountsTransactions.txt
         with open(account_transactions_file, "r") as filedata:
+            lines = filedata.readlines()
+        filedata.close()
+        matching_lines = []
+
+        # loop through retrieved lines to store matching lines in matching_lines list
+        for line in lines:
+            line_list = list(line.split(","))
+            if line_list[1] == account_number:
+                matching_lines.append(line.strip())
+
+        if len(matching_lines) == 0:
+            print("There are no transactions recorded for account number {", account_number, "}\n")
+        else:
+            print("Transactions for account number {", account_number, "} :\n")
+            for line in matching_lines:
+                timestamp, account_number, transaction_type, amount = line.split(",")
+                # converting timestamp to date time format
+                date_time = datetime.fromtimestamp(int(timestamp))
+                print(date_time, transaction_type, amount, "\n")
+
+    def view_transfers(self, account_number):
+        account_transfers_file = "accountsTransfers.txt"
+
+        # retrieve all transfers for account_number from accountsTransactions.txt
+        with open(account_transfers_file, "r") as filedata:
             lines = filedata.readlines()
         filedata.close()
         matching_lines = []
@@ -300,15 +330,162 @@ class Customer(object):
                 matching_lines.append(line.strip())
 
         if len(matching_lines) == 0:
-            print("There are no transactions recorded for account number { ", account_number, "}")
+            print("There are no transfers recorded for account number {", account_number, "}\n")
         else:
-            print("Transactions for account number { ", account_number, "} :\n")
+            print("Transfers for account number {", account_number, "} :\n")
             for line in matching_lines:
-                timestamp, account_number, transaction_type, amount = line.split(",")
+                timestamp, account_number, transaction_type, recipient, amount = line.split(",")
                 # converting timestamp to date time format
                 date_time = datetime.fromtimestamp(int(timestamp))
-                print(date_time, transaction_type, amount)
+                print(date_time, transaction_type, recipient, amount, "\n")
 
+    def transfer(self, line_number, account_number, account_type):
+        account_file = "accounts.txt"
+        transaction_type = "Transfer"  # variable for recording the transaction
+        amount = int(input("How much do you want to transfer from your account?\n"
+                           "Amount: "))
+        # check amount is valid
+        if amount > 1:
+            # retrieve current balance from accounts.txt
+            with open(account_file, "r") as filedata:
+                lines = filedata.readlines()
+            filedata.close()
+            line = lines[line_number - 1]
+            line_list = line.split(",")
+            current_balance = int(line_list[6])
+
+            # check user account type to confirm/deny transfer
+            if account_type == "Checking Account":
+                new_balance = current_balance - amount
+                print(new_balance)
+                if new_balance < -200:
+                    print("Credit limit of -200€ reached! Cannot transfer. Try another amount.")
+                else:
+                    recipient = input("Who do you want to transfer to?\n Account number: ")
+                    # check other account number exists
+                    with open(account_file, "r") as filedata:
+                        i = 0
+                        line_number_recipient = 1
+                        for line in filedata:
+                            if recipient in line:
+                                i = i + 1
+                                break
+                            line_number_recipient += 1
+                        if i == 0:
+                            print("Account \"" + recipient + "\" does not exist in Company BCE records !")
+                        else:
+                            # substract amount from account_number
+                            line_list[6] = str(new_balance)
+                            new_line = ",".join(line_list) + "\n"
+                            lines[line_number - 1] = new_line
+                            # write new balance to accounts.txt
+                            with open(account_file, "w") as f:
+                                f.writelines(lines)
+                            filedata.close()
+                            print("\nNew account balance: ", new_balance)
+
+                            # retrieve current balance recipient
+                            with open(account_file, "r") as filedata:
+                                lines_recipient = filedata.readlines()
+                            filedata.close()
+                            line_recipient = lines[line_number_recipient - 1]
+                            line_list_recipient = line_recipient.split(",")
+                            current_balance_recipient = int(line_list_recipient[6])
+                            print(current_balance_recipient)
+                            # add amount to recipient
+                            new_balance_recipient = current_balance_recipient + amount
+                            print(new_balance_recipient)
+                            line_list_recipient[6] = str(new_balance_recipient)
+                            new_line_recipient = ",".join(line_list_recipient) + "\n"
+                            lines_recipient[line_number_recipient - 1] = new_line_recipient
+                            # write recipient new balance to accounts.txt
+                            with open(account_file, "w") as f:
+                                f.writelines(lines_recipient)
+                            filedata.close()
+
+                            # record transaction to accountsTransfers.txt
+                            self.record_transfers(account_number, recipient, transaction_type, amount)
+
+            elif account_type == "Savings Account":
+                # check if specific account has already made 1 withdrawal for the month
+                # read lines of accountsTransactions.txt
+                with open("accountsTransfers.txt", "r") as f:
+                    transactions = f.readlines()
+                f.close()
+                current_month_withdrawals = 0
+                # loop through the lines to look for a match in account number, type of transaction & current month
+                for transaction in transactions:
+                    transaction_info = transaction.split(",")
+                    if transaction_info[1] == account_number and transaction_info[2] == "Transfer" \
+                            and self.is_current_month(transaction_info[0]):
+                        current_month_withdrawals += 1
+                if current_month_withdrawals > 0:
+                    print("You have reached your maximum transfer of 1 for the month!")
+                    return  # end the loop if a withdrawal has been made in current month
+                else:
+                    new_balance = current_balance - amount
+                    if new_balance < 0:
+                        print("You cannot transfer below negative balance!")
+                    else:
+                        recipient = input("Who do you want to transfer to?\n Account number: ")
+                        # check other account number exists
+                        with open(account_file, "r") as filedata:
+                            i = 0
+                            line_number_recipient = 1
+                            for line in filedata:
+                                if recipient in line:
+                                    i = i + 1
+                                    break
+                                line_number_recipient += 1
+                            if i == 0:
+                                print("Account \"" + recipient + "\" does not exist in Company BCE records !")
+                            else:
+                                # substract amount from account_number
+                                line_list[6] = str(new_balance)
+                                new_line = ",".join(line_list) + "\n"
+                                lines[line_number - 1] = new_line
+                                # write new balance to accounts.txt
+                                with open(account_file, "w") as f:
+                                    f.writelines(lines)
+                                filedata.close()
+                                print("\nNew account balance: ", new_balance)
+
+                                # retrieve current balance recipient
+                                with open(account_file, "r") as filedata:
+                                    lines_recipient = filedata.readlines()
+                                filedata.close()
+                                line_recipient = lines[line_number_recipient - 1]
+                                line_list_recipient = line_recipient.split(",")
+                                current_balance_recipient = int(line_list_recipient[6])
+                                print(current_balance_recipient)
+                                # add amount to recipient
+                                new_balance_recipient = current_balance_recipient + amount
+                                print(new_balance_recipient)
+                                line_list_recipient[6] = str(new_balance_recipient)
+                                new_line_recipient = ",".join(line_list_recipient) + "\n"
+                                lines_recipient[line_number_recipient - 1] = new_line_recipient
+                                # write recipient new balance to accounts.txt
+                                with open(account_file, "w") as f:
+                                    f.writelines(lines_recipient)
+                                filedata.close()
+
+                                # record transaction to accountsTransfers.txt
+                                self.record_transfers(account_number, recipient, transaction_type, amount)
+        else:
+            print("Invalid amount!")
+
+    def record_transfers(self, account_number, recipient, transaction_type, amount):
+        dt = datetime.now()
+        ts = datetime.timestamp(dt)
+        ts_int = int(ts)
+        transaction_list = [str(ts_int), account_number, transaction_type, recipient, str(amount)]
+
+        f = open("accountsTransfers.txt", "a")
+        f.write(",".join(transaction_list) + "\n")
+        f.close()
+        print("Transaction of type: ", transaction_type, "\nAmount: ", amount,
+              "\n From account number: ", account_number, "\n To recipient account number: ",
+                recipient, "\nTransaction successfully recorded\n")
 
 class Account(object):
     def __init__(self):

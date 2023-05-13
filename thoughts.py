@@ -13,5 +13,5 @@
 #if account type 'Saving account', check if transfer or withdrawal has been made and then allow
 # --ok but how tf do i do that?
 
-#need to move account information to customers.txt. but is that necessary?
+#need to move account information to accountsTransfers.txt. but is that necessary?
 #account transaction need to have account num, amount, type of operation and timestamp
