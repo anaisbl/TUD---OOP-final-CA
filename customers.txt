@@ -1,0 +1,3 @@
+0,nana dess,18,nana@gmail.com,dublin ireland
+1,nana,21,nana@mail.com,dublin ireland
+2,sam,23,sam@gmail.com,dublin ireland
