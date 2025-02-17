@@ -1,7 +1,10 @@
 # Final Assessment for the Course "Object-Oriented Programming: Python"
 
-## Bank Management System
-This project is a **Bank Management System** built in Python, utilizing **Object-Oriented Programming (OOP)** principles. The system operates through a **command-line interface (CLI)** and allows users to perform various banking operations efficiently.
+## Project Overview
+This project is the **final Continuous Assessment** for the course **"Object-Oriented Programming (CMPU4064)"** as part of the **Data Science program (TU059) at TU Dublin**.
+
+## Task Description
+The objective of this project is to develop a **Bank Management System** in Python, utilizing **Object-Oriented Programming (OOP)** principles. The system operates through a **command-line interface (CLI)** and allows users to perform various banking operations efficiently.
 
 ### Features
 - **Account Management**: Create a new bank account, update details, and delete accounts.
