@@ -37,7 +37,6 @@ This project was submitted as the **final assessment** for the course **"Object-
 - Implement a **Graphical User Interface (GUI)** for better usability.
 - Add **database integration** for persistent data storage.
 - Improve security with **encryption** for sensitive data.
-- Expand features to include **loans, interest calculation, and multiple account types**.
 
 ---
 Feel free to contribute or suggest improvements by opening an issue or pull request. 🚀
